@@ -8,18 +8,7 @@ No cloud APIs. No data leaves your machine.
 
 ## Architecture
 
-```
-┌─────────────────┐     ┌──────────────┐     ┌───────────────┐
-│  Go Web App      │────▶│  n8n Webhook  │────▶│  LM Studio    │
-│  (localhost:8090)│     │  (Docker)     │     │  (Mistral 7B) │
-└─────────────────┘     └──────┬───────┘     └───────────────┘
-                               │
-┌─────────────────┐            │
-│ Chrome Extension │───────────┘            ┌───────────────┐
-│ (Brave/Chrome)   │                   ────▶│  Obsidian     │
-└─────────────────┘                         │  (Local REST) │
-                                            └───────────────┘
-```
+![Architecture](architecture.png)
 
 ## Features
 

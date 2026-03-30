@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    padding: 40px;
+  }
+  .container {
+    width: 900px;
+    position: relative;
+  }
+  .title {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .title h1 {
+    color: #fafafa;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .title p {
+    color: #525252;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .node {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 10px;
+    padding: 16px 20px;
+    min-width: 180px;
+    position: relative;
+  }
+  .node-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .node-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 2px;
+  }
+  .node-desc {
+    font-size: 11px;
+    color: #525252;
+  }
+  .node-tech {
+    margin-top: 8px;
+    display: flex;
+    gap: 4px;
+  }
+  .tag {
+    font-size: 9.5px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  /* Colors */
+  .input .node-label { color: #22c55e; }
+  .input .node { border-color: #1a3a2a; }
+  .input .tag { background: #0a1f12; color: #22c55e; }
+
+  .engine .node-label { color: #f97316; }
+  .engine .node { border-color: #3d2008; min-width: 200px; }
+  .engine .tag { background: #1f1206; color: #f97316; }
+
+  .process .node-label { color: #3b82f6; }
+  .process .node { border-color: #172554; }
+  .process .tag { background: #0c1629; color: #3b82f6; }
+
+  .storage .node-label { color: #a855f7; }
+  .storage .node { border-color: #2e1065; }
+  .storage .tag { background: #1a0a2e; color: #a855f7; }
+
+  /* Arrows */
+  .arrows {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  .arrow-line {
+    stroke-width: 1.5;
+    fill: none;
+    stroke-dasharray: 6 3;
+  }
+  .arrow-head {
+    stroke-width: 1.5;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  .footer span {
+    font-size: 11px;
+    color: #404040;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .footer .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #22c55e;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">
+    <h1>Article Summarizer — Architecture</h1>
+    <p>Local AI-powered article summarization pipeline</p>
+  </div>
+
+  <div class="row">
+    <!-- INPUT COLUMN -->
+    <div class="col input">
+      <div class="node">
+        <div class="node-label">Input</div>
+        <div class="node-name">Go Web App</div>
+        <div class="node-desc">Desktop UI for text input</div>
+        <div class="node-tech">
+          <span class="tag">Go</span>
+          <span class="tag">:8090</span>
+          <span class="tag">embed.FS</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-label">Input</div>
+        <div class="node-name">Browser Extension</div>
+        <div class="node-desc">Select text on any page</div>
+        <div class="node-tech">
+          <span class="tag">Manifest v3</span>
+          <span class="tag">Brave</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARROW COLUMN -->
+    <div style="color: #404040; font-size: 24px; display: flex; flex-direction: column; gap: 56px;">
+      <span>→</span>
+      <span>→</span>
+    </div>
+
+    <!-- ENGINE -->
+    <div class="col engine">
+      <div class="node">
+        <div class="node-label">Engine</div>
+        <div class="node-name">n8n Workflow</div>
+        <div class="node-desc">Chunking · Map-Reduce · Formatting</div>
+        <div class="node-tech">
+          <span class="tag">Docker</span>
+          <span class="tag">Webhook</span>
+          <span class="tag">:5678</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARROW COLUMN -->
+    <div style="color: #404040; font-size: 24px; display: flex; flex-direction: column; gap: 56px;">
+      <span>→</span>
+      <span>→</span>
+    </div>
+
+    <!-- OUTPUT COLUMN -->
+    <div class="col">
+      <div class="process">
+        <div class="node">
+          <div class="node-label">LLM</div>
+          <div class="node-name">LM Studio</div>
+          <div class="node-desc">Local inference, no cloud</div>
+          <div class="node-tech">
+            <span class="tag">Mistral 7B</span>
+            <span class="tag">:1234</span>
+          </div>
+        </div>
+      </div>
+      <div class="storage">
+        <div class="node">
+          <div class="node-label">Storage</div>
+          <div class="node-name">Obsidian</div>
+          <div class="node-desc">Auto-saved Markdown notes</div>
+          <div class="node-tech">
+            <span class="tag">REST API</span>
+            <span class="tag">:27123</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><div class="dot"></div> 100% Local</span>
+    <span><div class="dot"></div> No Cloud APIs</span>
+    <span><div class="dot"></div> Privacy First</span>
+    <span><div class="dot"></div> Open Source</span>
+  </div>
+</div>
+</body>
+</html>
