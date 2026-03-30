@@ -12,8 +12,8 @@ No cloud APIs. No data leaves your machine.
 - **Smart Chunking** — Automatically splits long texts into context-safe chunks (≤5000 chars) for models with limited context windows (e.g., 4096 tokens)
 - **Map-Reduce Summarization** — Short texts get a direct summary; long texts are chunked, summarized individually, then synthesized into a cohesive final summary
 - **Markdown Formatting** — A dedicated formatting step turns raw summaries into clean, professional Markdown
-- **🔥 Critical Review (Grill)** — An LLM-powered "peer reviewer" that ruthlessly critiques each summary, identifying missing points, weak claims, bias, and overlooked connections
-- **⏱️ Processing Stats** — Tracks total processing time, character counts, and estimated token usage for every run
+- **Critical Review (Grill)** — An LLM-powered "peer reviewer" that ruthlessly critiques each summary, identifying missing points, weak claims, bias, and overlooked connections
+- **Processing Stats** — Tracks total processing time, character counts, and estimated token usage for every run
 - **Obsidian Integration** — Summaries are auto-saved to your Obsidian vault via the Local REST API plugin, with full frontmatter metadata (date, model, processing time, token count)
 - **Chrome/Brave Extension** — Select text on any page, right-click → summarize. Or paste text in the popup
 - **100% Local** — Everything runs on your machine. No API keys, no cloud, no data leakage
