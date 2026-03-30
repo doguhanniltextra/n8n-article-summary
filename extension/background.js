@@ -1,8 +1,8 @@
-// Right-click context menu: "Makale Özetle"
+// Right-click context menu: "Summarize Article"
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'summarize-selection',
-    title: 'Makale Özetle',
+    title: 'Summarize Article',
     contexts: ['selection']
   });
 });

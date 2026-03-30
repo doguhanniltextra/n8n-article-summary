@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Article Summarizer</title>
@@ -160,31 +160,31 @@
         <polyline points="14 2 14 8 20 8"/>
       </svg>
     </div>
-    <h1>Makale Özetleyici</h1>
+    <h1>Article Summarizer</h1>
     <span>v1.0</span>
   </div>
 
   <div class="body">
-    <textarea id="textInput" placeholder="Metni buraya yapıştır veya sayfadan seçili metni al..."></textarea>
+    <textarea id="textInput" placeholder="Paste text here or grab selected text from the page..."></textarea>
 
     <div class="actions">
-      <button class="btn btn-grab" id="grabBtn">📋 Seçili Metni Al</button>
-      <button class="btn btn-send" id="sendBtn">⚡ Özetle</button>
+      <button class="btn btn-grab" id="grabBtn">📋 Grab Selection</button>
+      <button class="btn btn-send" id="sendBtn">⚡ Summarize</button>
     </div>
 
     <div class="info">
-      <span id="charCount">0 karakter</span>
+      <span id="charCount">0 characters</span>
       <div class="status">
         <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">Hazır</span>
+        <span id="statusText">Ready</span>
       </div>
     </div>
 
     <div class="result" id="result"></div>
 
     <div class="result-actions" id="resultActions">
-      <button class="btn-sm" id="copyBtn">📋 Kopyala</button>
-      <button class="btn-sm" id="clearBtn">🗑 Temizle</button>
+      <button class="btn-sm" id="copyBtn">📋 Copy</button>
+      <button class="btn-sm" id="clearBtn">🗑 Clear</button>
     </div>
   </div>
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Makale Özetleyici",
-  "description": "Seçili metni veya yapıştırılan metni n8n ile özetle",
+  "name": "Article Summarizer",
+  "description": "Summarize selected or pasted text with n8n",
   "version": "1.0",
   "permissions": ["activeTab", "contextMenus", "storage", "scripting"],
   "action": {

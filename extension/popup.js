@@ -19,7 +19,7 @@ let lastSummary = '';
 
 // Character count
 textInput.addEventListener('input', () => {
-  charCount.textContent = textInput.value.length.toLocaleString('tr-TR') + ' karakter';
+  charCount.textContent = textInput.value.length.toLocaleString('en-US') + ' characters';
 });
 
 // Grab selected text from active tab
@@ -33,15 +33,15 @@ grabBtn.addEventListener('click', async () => {
 
     if (selectedText && selectedText.trim()) {
       textInput.value = selectedText.trim();
-      charCount.textContent = textInput.value.length.toLocaleString('tr-TR') + ' karakter';
-      setStatus('ready', 'Metin alındı');
+      charCount.textContent = textInput.value.length.toLocaleString('en-US') + ' characters';
+      setStatus('ready', 'Text captured');
     } else {
-      setStatus('error', 'Seçili metin yok');
-      setTimeout(() => setStatus('ready', 'Hazır'), 2000);
+      setStatus('error', 'No text selected');
+      setTimeout(() => setStatus('ready', 'Ready'), 2000);
     }
   } catch (err) {
-    setStatus('error', 'Erişim hatası');
-    setTimeout(() => setStatus('ready', 'Hazır'), 2000);
+    setStatus('error', 'Access error');
+    setTimeout(() => setStatus('ready', 'Ready'), 2000);
   }
 });
 
@@ -49,15 +49,15 @@ grabBtn.addEventListener('click', async () => {
 sendBtn.addEventListener('click', async () => {
   const text = textInput.value.trim();
   if (!text) {
-    setStatus('error', 'Metin gir');
-    setTimeout(() => setStatus('ready', 'Hazır'), 2000);
+    setStatus('error', 'Enter text');
+    setTimeout(() => setStatus('ready', 'Ready'), 2000);
     return;
   }
 
   sendBtn.disabled = true;
-  setStatus('loading', 'İşleniyor...');
+  setStatus('loading', 'Processing...');
   result.className = 'result visible';
-  result.textContent = 'Özet oluşturuluyor...';
+  result.textContent = 'Generating summary...';
 
   try {
     const response = await fetch(N8N_ENDPOINT, {
@@ -84,12 +84,12 @@ sendBtn.addEventListener('click', async () => {
     result.className = 'result visible success';
     result.textContent = summary;
     resultActions.className = 'result-actions visible';
-    setStatus('ready', 'Tamamlandı');
+    setStatus('ready', 'Completed');
 
   } catch (err) {
     result.className = 'result visible error';
-    result.textContent = 'Hata: ' + err.message;
-    setStatus('error', 'Bağlantı hatası');
+    result.textContent = 'Error: ' + err.message;
+    setStatus('error', 'Connection error');
   } finally {
     sendBtn.disabled = false;
   }
@@ -99,8 +99,8 @@ sendBtn.addEventListener('click', async () => {
 copyBtn.addEventListener('click', async () => {
   if (!lastSummary) return;
   await navigator.clipboard.writeText(lastSummary);
-  copyBtn.textContent = '✓ Kopyalandı';
-  setTimeout(() => { copyBtn.textContent = '📋 Kopyala'; }, 1500);
+  copyBtn.textContent = '✓ Copied';
+  setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 1500);
 });
 
 // Clear all
@@ -109,9 +109,9 @@ clearBtn.addEventListener('click', () => {
   result.className = 'result';
   result.textContent = '';
   resultActions.className = 'result-actions';
-  charCount.textContent = '0 karakter';
+  charCount.textContent = '0 characters';
   lastSummary = '';
-  setStatus('ready', 'Hazır');
+  setStatus('ready', 'Ready');
 });
 
 function setStatus(state, text) {
@@ -123,7 +123,7 @@ function setStatus(state, text) {
 chrome.storage.local.get('pendingText', (data) => {
   if (data.pendingText) {
     textInput.value = data.pendingText;
-    charCount.textContent = data.pendingText.length.toLocaleString('tr-TR') + ' karakter';
+    charCount.textContent = data.pendingText.length.toLocaleString('en-US') + ' characters';
     chrome.storage.local.remove('pendingText');
     chrome.action.setBadgeText({ text: '' });
   }
