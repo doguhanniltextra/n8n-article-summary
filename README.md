@@ -6,9 +6,6 @@ No cloud APIs. No data leaves your machine.
 
 ![n8n Workflow](img/main.png) 
 
-## Architecture
-
-![Architecture](architecture.png)
 
 ## Features
 
