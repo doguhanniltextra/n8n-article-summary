@@ -18,8 +18,6 @@ app/article-summarizer
 Thumbs.db
 desktop.ini
 
-# Environment
-.env
 
 # n8n data
 n8n_data/

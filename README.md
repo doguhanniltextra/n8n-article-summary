@@ -4,6 +4,8 @@ A fully local, privacy-first article summarization pipeline powered by **n8n**, 
 
 No cloud APIs. No data leaves your machine.
 
+![n8n Workflow](img/main.png)
+
 ## Architecture
 
 ```
@@ -84,23 +86,6 @@ Open `http://localhost:8090` in your browser.
 - Enable **Developer mode**
 - Click **Load unpacked** → select the `extension/` folder
 
-## Configuration
-
-Copy `.env.example` to `.env` and adjust:
-
-```env
-# n8n webhook endpoint (use /webhook-test/ for testing, /webhook/ for production)
-N8N_ENDPOINT=http://localhost:5678/webhook/article-summary
-
-# Go web app port
-APP_PORT=8090
-
-# Obsidian Local REST API (optional)
-OBSIDIAN_API_KEY=your-api-key-here
-OBSIDIAN_PORT=27123
-```
-
-> **Note:** The Go app currently uses hardcoded constants. Modify `app/main.go` to read from environment variables if needed.
 
 ## How It Works
 
