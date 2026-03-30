@@ -4,7 +4,7 @@ A fully local, privacy-first article summarization pipeline powered by **n8n**, 
 
 No cloud APIs. No data leaves your machine.
 
-![n8n Workflow](img/main.png)
+![n8n Workflow](img/main.png) 
 
 ## Architecture
 
