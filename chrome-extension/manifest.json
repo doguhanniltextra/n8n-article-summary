@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Makale Özetleyici",
+  "description": "Seçili metni veya yapıştırılan metni n8n ile özetle",
+  "version": "1.0",
+  "permissions": ["activeTab", "contextMenus", "storage", "scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

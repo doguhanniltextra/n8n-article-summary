@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Article Summarizer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 380px;
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: #fafafa;
+      color: #171717;
+    }
+
+    .header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid #e5e5e5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-icon {
+      width: 28px; height: 28px;
+      background: #171717;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .header-icon svg { width: 14px; height: 14px; color: white; }
+
+    .header h1 { font-size: 14px; font-weight: 600; }
+    .header span { font-size: 11px; color: #a3a3a3; margin-left: auto; }
+
+    .body { padding: 12px 16px; }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 12.5px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      background: #fff;
+      color: #171717;
+    }
+
+    textarea:focus { border-color: #171717; }
+    textarea::placeholder { color: #a3a3a3; font-size: 11.5px; }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-grab {
+      background: #fff;
+      color: #525252;
+      border: 1px solid #e5e5e5;
+    }
+    .btn-grab:hover { background: #f0f0f0; }
+
+    .btn-send {
+      background: #171717;
+      color: white;
+    }
+    .btn-send:hover { background: #404040; }
+    .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 10px;
+      color: #a3a3a3;
+    }
+
+    .status {
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .status-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #16a34a;
+    }
+
+    .status-dot.loading { background: #ca8a04; animation: blink 0.8s infinite; }
+    .status-dot.error { background: #dc2626; }
+
+    @keyframes blink { 50% { opacity: 0.3; } }
+
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.7;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      display: none;
+    }
+
+    .result.visible { display: block; }
+    .result.error { border-color: #fecaca; color: #dc2626; }
+    .result.success { border-color: #bbf7d0; }
+
+    .result-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .result-actions.visible { display: flex; }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 10.5px;
+      border-radius: 4px;
+      border: 1px solid #e5e5e5;
+      background: #fff;
+      color: #525252;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-sm:hover { background: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+    </div>
+    <h1>Makale Özetleyici</h1>
+    <span>v1.0</span>
+  </div>
+
+  <div class="body">
+    <textarea id="textInput" placeholder="Metni buraya yapıştır veya sayfadan seçili metni al..."></textarea>
+
+    <div class="actions">
+      <button class="btn btn-grab" id="grabBtn">📋 Seçili Metni Al</button>
+      <button class="btn btn-send" id="sendBtn">⚡ Özetle</button>
+    </div>
+
+    <div class="info">
+      <span id="charCount">0 karakter</span>
+      <div class="status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Hazır</span>
+      </div>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <div class="result-actions" id="resultActions">
+      <button class="btn-sm" id="copyBtn">📋 Kopyala</button>
+      <button class="btn-sm" id="clearBtn">🗑 Temizle</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+﻿{
+  "name": "Article Summarizer",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "article-summary",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "67547f9f-876d-46e0-9c60-a382fc8ed8a3",
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        1552
+      ],
+      "webhookId": "40952e47-3666-4c1e-83f6-3e4489da1ba4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.item.json.body.text;\nconst charCount = text.length;\n\n// TÃ¼rkÃ§e metinler iÃ§in ultra-gÃ¼venli limitler (YaklaÅŸÄ±k 1000-1200 token)\n// Bu sayede hem prompt hem de cevap context iÃ§ine rahatÃ§a sÄ±ÄŸar.\nconst SAFE_CHARS = 5000; \nconst CHARS_PER_CHUNK = 5000; \n\nif (charCount <= SAFE_CHARS) {\n  return [{\n    json: {\n      needs_chunking: false,\n      chunks: [text],\n      chunk_count: 1,\n      total_chars: charCount\n    }\n  }];\n} else {\n  const chunkCount = Math.max(2, Math.ceil(charCount / CHARS_PER_CHUNK));\n  const lines = text.split('\\n');\n  const chunkSize = Math.ceil(lines.length / chunkCount);\n\n  const chunks = [];\n  for (let i = 0; i < chunkCount; i++) {\n    const start = i * chunkSize;\n    const end = Math.min(start + chunkSize, lines.length);\n    const chunk = lines.slice(start, end).join('\\n').trim();\n    if (chunk.length > 0) chunks.push(chunk);\n  }\n\n  return [{\n    json: {\n      needs_chunking: true,\n      chunks: chunks,\n      chunk_count: chunks.length,\n      total_chars: charCount\n    }\n  }];\n}"
+      },
+      "id": "d6b1db26-8e54-4eab-b51f-b450b71a341f",
+      "name": "Seperation Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        1552
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{ $json.needs_chunking }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d87debc8-3f76-4355-8761-1fdcb50863f6",
+      "name": "Separation Validate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        1552
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:1234/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"model\": \"mistral-7b-instruct-v0.2\", \"temperature\": 0.3, \"messages\": [ { \"role\": \"user\", \"content\": \"You are an expert academic summarizer. Your job is to produce clear, accurate, and structured summaries of technical and research texts. You follow these strict rules:\\n\\n1. NEVER translate proper nouns, technical terms, model names, or acronyms (e.g. AI, LLM, RAG, Claude, GPT stay as-is).\\n2. NEVER add information that is not in the original text. Do not hallucinate.\\n3. NEVER use vague language. Be specific and precise.\\n4. Always follow the exact output structure given to you.\\n5. Write in clear, professional English only.\\n6. If the text is too short or lacks substance, still follow the structure â€” write N/A where genuinely not applicable.\\n\\nSummarize the following text using this exact structure:\\n\\n## Title\\n(A concise title that captures the main topic)\\n\\n## Main Idea\\n(2-3 sentences describing the core argument or finding)\\n\\n## Key Concepts\\n(A bullet list of the most important concepts, terms, or ideas â€” keep technical terms in their original form)\\n\\n## Key Findings or Arguments\\n(The most important points made in the text â€” be specific, not generic)\\n\\n## Conclusion\\n(What is the takeaway? What does this mean in practice?)\\n\\n---\\nText to summarize:\\n\\n\" + $json.chunks[0] } ] } }}",
+        "options": {}
+      },
+      "id": "d209b92f-41cd-4099-9719-cbfb628d21cc",
+      "name": "Summary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2656,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:1234/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify({\n    \"model\": \"mistral-7b-instruct-v0.2\",\n    \"temperature\": 0.4,\n    \"messages\": [\n      {\n        \"role\": \"user\",\n        \"content\": `You are an expert Markdown editor and tech blog copywriter. Your task is to take a synthesized summary and format it into a beautiful, highly readable, and professional Markdown document suitable for a high-quality blog or Obsidian vault.\n\nFormatting Rules:\n1. Use appropriate heading levels (##, ###).\n2. Use bolding (**text**) strategically to highlight key concepts, metrics, or vital terms.\n3. Use blockquotes (>) for the 'Main Idea' or 'Conclusion' to make them visually stand out.\n4. Ensure lists are clean, well-spaced, and properly indented.\n5. DO NOT change the core meaning, add fake information, or remove important details. Your job is PURELY formatting, typography, and structural enhancement.\n6. NEVER translate technical terms, proper nouns, or acronyms.\n7. Return ONLY the formatted markdown text. Do not wrap it in \\`\\`\\`markdown code blocks.\n\nHere is the raw summary to format:\n\n${$json.choices[0].message.content}`\n      }\n    ]\n  })\n}}",
+        "options": {}
+      },
+      "id": "1985265d-e7fb-4767-8a1a-ba0d93f525b1",
+      "name": "Pretty",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2960,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item.json;\nconst chunks = item.chunks;\n\nreturn chunks.map((chunk, i) => ({\n  json: {\n    chunk_index: i + 1,\n    total_chunks: chunks.length,\n    content: chunk\n  }\n}));"
+      },
+      "id": "3a98d95d-b8a4-4661-b696-b0da76001904",
+      "name": "Split",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        1696
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:1234/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"model\": \"mistral-7b-instruct-v0.2\", \"temperature\": 0.3, \"messages\": [ { \"role\": \"user\", \"content\": \"You are an expert academic summarizer processing one section of a larger document. Your job is to extract the key information from this section accurately and concisely. Rules:\\n\\n1. NEVER translate technical terms, proper nouns, model names, or acronyms.\\n2. NEVER add information not present in the text. Do not hallucinate.\\n3. Be specific â€” avoid vague statements like 'the text discusses various topics'.\\n4. Write in clear, professional English only.\\n5. This is section \" + $json.chunk_index + \" of \" + $json.total_chunks + \" of a larger document â€” focus only on what is in this section.\\n\\nSummarize the following section of a document. Extract:\\n- The main point of this section\\n- Any specific findings, arguments, or methods mentioned\\n- Any important concepts or terms introduced\\n\\nBe concise but complete. Do not miss important details.\\n\\n---\\nSection \" + $json.chunk_index + \" of \" + $json.total_chunks + \":\\n\\n\" + $json.content } ] } }}",
+        "options": {}
+      },
+      "id": "3bfa37e9-e71c-4ca6-88f1-56f234a3224a",
+      "name": "Summary1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2576,
+        1696
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst combined = items\n  .map((item, i) => `### Section ${i + 1} Summary\\n${item.json.choices[0].message.content}`)\n  .join('\\n\\n');\n\nreturn [{ json: { combined_summaries: combined } }];"
+      },
+      "id": "f114d94b-81b5-4d50-9e26-4e48e6d4a5d1",
+      "name": "Combine Parts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        1696
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:1234/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"model\": \"mistral-7b-instruct-v0.2\", \"temperature\": 0.3, \"messages\": [ { \"role\": \"user\", \"content\": \"You are an expert academic summarizer. You have been given summaries of individual sections of a document. Your job is to synthesize them into one cohesive, well-structured final summary. Rules:\\n\\n1. NEVER translate technical terms, proper nouns, model names, or acronyms.\\n2. NEVER add information not present in the section summaries. Do not hallucinate.\\n3. Remove redundancy â€” if multiple sections say the same thing, say it once.\\n4. Preserve all important specific details â€” do not over-generalize.\\n5. The final summary must read as a single coherent document, not a list of section summaries.\\n6. Write in clear, professional English only.\\n\\nBelow are summaries of each section of a document. Synthesize them into one final summary using this exact structure:\\n\\n## Title\\n(A precise title reflecting the document's main topic)\\n\\n## Main Idea\\n(2-3 sentences â€” what is this document fundamentally about?)\\n\\n## Key Concepts\\n(Bullet list of the most important concepts, methods, or terms â€” keep all technical terms as-is)\\n\\n## Key Findings or Arguments\\n(The most important and specific points from across all sections â€” be precise, not vague)\\n\\n## Practical Implications\\n(What does this mean in practice? Who benefits and how?)\\n\\n## Conclusion\\n(The overall takeaway in 2-3 sentences)\\n\\n---\\nSection Summaries:\\n\\n\" + $json.combined_summaries } ] } }}",
+        "options": {}
+      },
+      "id": "2cb1e174-fcec-48df-8996-dc130ac99d5f",
+      "name": "Final Meta",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        3008,
+        1696
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:1234/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify({\n    \"model\": \"mistral-7b-instruct-v0.2\",\n    \"temperature\": 0.4,\n    \"messages\": [\n      {\n        \"role\": \"user\",\n        \"content\": `You are an expert Markdown editor and tech blog copywriter. Your task is to take a synthesized summary and format it into a beautiful, highly readable, and professional Markdown document suitable for a high-quality blog or Obsidian vault.\n\nFormatting Rules:\n1. Use appropriate heading levels (##, ###).\n2. Use bolding (**text**) strategically to highlight key concepts, metrics, or vital terms.\n3. Use blockquotes (>) for the 'Main Idea' or 'Conclusion' to make them visually stand out.\n4. Ensure lists are clean, well-spaced, and properly indented.\n5. DO NOT change the core meaning, add fake information, or remove important details. Your job is PURELY formatting, typography, and structural enhancement.\n6. NEVER translate technical terms, proper nouns, or acronyms.\n7. Return ONLY the formatted markdown text. Do not wrap it in \\`\\`\\`markdown code blocks.\n\nHere is the raw summary to format:\n\n${$json.choices[0].message.content}`\n      }\n    ]\n  })\n}}",
+        "options": {}
+      },
+      "id": "a2d096eb-6d52-44c3-a3f0-af125bf1d9df",
+      "name": "Pretty1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        3216,
+        1696
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "b75f440d-bcd0-4656-81ce-50baf695cd28",
+      "name": "Combine Branch",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3376,
+        1552
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:27123/vault/Ozetler/{{ $now.format('yyyy-MM-dd-HHmmss') }}.md",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_OBSIDIAN_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "text/markdown"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/markdown",
+        "body": "=---\ndate: {{ $now.format('yyyy-MM-dd') }}\ntime: {{ $now.format('HH:mm:ss') }}\nmodel: mistral-7b-instruct-v0.2\nmethod: map-reduce\n---\n\n{{ $json.choices[0].message.content }}",
+        "options": {}
+      },
+      "id": "73f9efdc-c165-4a81-ac44-3a18418efe42",
+      "name": "Vault B",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        3600,
+        1552
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Seperation Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seperation Decision": {
+      "main": [
+        [
+          {
+            "node": "Separation Validate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separation Validate": {
+      "main": [
+        [
+          {
+            "node": "Summary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summary": {
+      "main": [
+        [
+          {
+            "node": "Pretty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pretty": {
+      "main": [
+        [
+          {
+            "node": "Combine Branch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split": {
+      "main": [
+        [
+          {
+            "node": "Summary1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summary1": {
+      "main": [
+        [
+          {
+            "node": "Combine Parts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Parts": {
+      "main": [
+        [
+          {
+            "node": "Final Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Meta": {
+      "main": [
+        [
+          {
+            "node": "Pretty1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pretty1": {
+      "main": [
+        [
+          {
+            "node": "Combine Branch",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Combine Branch": {
+      "main": [
+        [
+          {
+            "node": "Vault B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vault B": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "450b5cbe-390d-41e9-a95b-2a78c6d284a8",
+  "meta": {
+    "instanceId": "71081c826a6fc5c8ae1ad4607bdd73d1ad91095bc71c4933d00cf14e7aa4f308"
+  },
+  "id": "xxXF5lgNxr9fhN8W",
+  "tags": [
+    {
+      "updatedAt": "2026-03-30T03:35:59.163Z",
+      "createdAt": "2026-03-30T03:35:59.163Z",
+      "id": "DC0hEX5RgZgwPhEP",
+      "name": "Makale"
+    },
+    {
+      "updatedAt": "2026-03-30T03:35:59.970Z",
+      "createdAt": "2026-03-30T03:35:59.970Z",
+      "id": "Ny8NM4EXUzGNWqVs",
+      "name": "Ã–zetleme"
+    }
+  ]
+}

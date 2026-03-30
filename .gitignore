@@ -1,0 +1,34 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+app/article-summarizer
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment
+.env
+
+# n8n data
+n8n_data/
+
+# Test files
+example_longer.txt
+
+# Internal
+.sixth/
+plan.md
+makale-ozet-workflow-v3.json
+Makale Özetleyici v3.json
