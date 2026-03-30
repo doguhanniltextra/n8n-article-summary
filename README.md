@@ -1,6 +1,6 @@
-# Article Summarizer — Local AI Pipeline
+# Article Summarizer - Local AI Pipeline
 
-A fully local, privacy-first article summarization pipeline powered by **n8n**, **LM Studio**, and a **Go** backend. Summarize any text — from blog posts to research papers — using a local LLM, with automatic note-taking to Obsidian.
+A fully local, privacy-first article summarization pipeline powered by **n8n**, **LM Studio**, and a **Go** backend. Summarize any text - from blog posts to research papers - using a local LLM, with automatic note-taking to Obsidian.
 
 No cloud APIs. No data leaves your machine.
 
@@ -21,12 +21,12 @@ No cloud APIs. No data leaves your machine.
 
 ## Features
 
-- **Smart Chunking** — Automatically splits long texts into context-safe chunks (≤5000 chars) for models with limited context windows (e.g., 4096 tokens)
-- **Map-Reduce Summarization** — Short texts get a direct summary; long texts are chunked, summarized individually, then synthesized into a cohesive final summary
-- **Markdown Formatting** — A dedicated "Pretty" step formats summaries into clean, professional Markdown
-- **Obsidian Integration** — Summaries are auto-saved to your Obsidian vault via the Local REST API plugin
-- **Chrome/Brave Extension** — Select text on any page, right-click → summarize. Or paste text in the popup
-- **100% Local** — Everything runs on your machine. No API keys, no cloud, no data leakage
+- **Smart Chunking** - Automatically splits long texts into context-safe chunks (≤5000 chars) for models with limited context windows (e.g., 4096 tokens)
+- **Map-Reduce Summarization** - Short texts get a direct summary; long texts are chunked, summarized individually, then synthesized into a cohesive final summary
+- **Markdown Formatting** - A dedicated "Pretty" step formats summaries into clean, professional Markdown
+- **Obsidian Integration** - Summaries are auto-saved to your Obsidian vault via the Local REST API plugin
+- **Chrome/Brave Extension** - Select text on any page, right-click → summarize. Or paste text in the popup
+- **100% Local** - Everything runs on your machine. No API keys, no cloud, no data leakage
 
 ## Components
 
@@ -40,9 +40,9 @@ No cloud APIs. No data leaves your machine.
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) — for running n8n
-- [Go 1.21+](https://go.dev/dl/) — for building the web app
-- [LM Studio](https://lmstudio.ai/) — for local LLM inference
+- [Docker](https://docs.docker.com/get-docker/) - for running n8n
+- [Go 1.21+](https://go.dev/dl/) - for building the web app
+- [LM Studio](https://lmstudio.ai/) - for local LLM inference
 - [Obsidian](https://obsidian.md/) + [Local REST API plugin](https://github.com/coddingtonbear/obsidian-local-rest-api) (optional)
 
 ## Quick Start
@@ -170,4 +170,4 @@ Simply remove or disable the "Vault B" node in the n8n workflow. Summaries will 
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT - see [LICENSE](LICENSE)
